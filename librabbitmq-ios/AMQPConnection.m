@@ -53,14 +53,35 @@
 
 - (void)connectToHost:(NSString*)host onPort:(int)port
 {
-	socketFD = amqp_open_socket([host UTF8String], port);
-	
-	if(socketFD < 0)
-	{
-		[NSException raise:@"AMQPConnectionException" format:@"Unable to open socket to host %@ on port %d", host, port];
-	}
+    int status;
+    
+    socketFD = amqp_ssl_socket_new(connection);
+    if (!socketFD) {
+        NSLog(@"Error while creating SSL/TLS socket");
+    }
+    
+#if 0
+    /* TODO/FIXME - in case we need this */
+    if (argc > 5) {
+        status = amqp_ssl_socket_set_cacert(socket, argv[5]);
+        if (status) {
+            NSLog("Error setting CA certificate");
+        }
+    }
+    
+    if (argc > 7) {
+        status = amqp_ssl_socket_set_key(socket, argv[7], argv[6]);
+        if (status) {
+            NSLog("Error setting client key/cert");
+        }
+    }
+#endif
 
-    amqp_set_sockfd(connection, socketFD);
+    const char *t = [host cStringUsingEncoding:NSUTF8StringEncoding];
+    status = amqp_socket_open(socketFD, t, port);
+    if (status) {
+        NSLog(@"Error opening SSL/TLS connection");
+    }
 }
 
 - (void)loginAsUser:(NSString*)username withPasswort:(NSString*)password onVHost:(NSString*)vhost
@@ -80,8 +101,6 @@
 	{
 		[NSException raise:@"AMQPConnectionException" format:@"Unable to disconnect from host: %@", [self errorDescriptionForReply:reply]];
 	}
-	
-	close(socketFD);
 }
 
 - (void)checkLastOperation:(NSString*)context

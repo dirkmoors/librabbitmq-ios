@@ -20,6 +20,7 @@
 //#import <Cocoa/Cocoa.h>
 
 # import "rabbitmq-c/amqp.h"
+# import "rabbitmq-c/amqp_ssl_socket.h"
 
 # import "AMQPObject.h"
 
@@ -28,7 +29,7 @@
 @interface AMQPConnection : AMQPObject
 {
 	amqp_connection_state_t connection;
-	int socketFD;
+	amqp_socket_t *socketFD;
 	
 	unsigned int nextChannel;
 }
