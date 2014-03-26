@@ -64,7 +64,7 @@
     AMQPConnection* connection = [[AMQPConnection alloc] init];
     
     [connection connectToHost:host onPort:port];
-    [connection loginAsUser:host withPasswort:password onVHost:vhost];
+    [connection loginAsUser:user withPasswort:password onVHost:vhost];
     
     AMQPChannel* channel = [connection openChannel];
     
