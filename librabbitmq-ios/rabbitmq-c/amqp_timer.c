@@ -128,7 +128,7 @@ amqp_timer_update(amqp_timer_t *timer, struct timeval *timeout)
   timer->ns_until_next_timeout = timer->timeout_timestamp - timer->current_timestamp;
 
   memset(&timer->tv, 0, sizeof(struct timeval));
-  timer->tv.tv_sec = timer->ns_until_next_timeout / AMQP_NS_PER_S;
+  timer->tv.tv_sec = (__darwin_time_t)(timer->ns_until_next_timeout / AMQP_NS_PER_S);
   timer->tv.tv_usec = (timer->ns_until_next_timeout % AMQP_NS_PER_S) / AMQP_NS_PER_US;
 
   return AMQP_STATUS_OK;

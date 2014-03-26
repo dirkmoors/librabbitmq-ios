@@ -20,10 +20,13 @@
 #import "AMQPConnection.h"
 
 # import "rabbitmq-c/amqp.h"
+# import "rabbitmq-c/amqp_ssl_socket.h"
 # import "rabbitmq-c/amqp_framing.h"
 # import <unistd.h>
 
 # import "AMQPChannel.h"
+
+// Reference: https://github.com/alanxz/rabbitmq-c/blob/master/examples/amqps_exchange_declare.c
 
 @implementation AMQPConnection
 
@@ -57,7 +60,7 @@
 		[NSException raise:@"AMQPConnectionException" format:@"Unable to open socket to host %@ on port %d", host, port];
 	}
 
-	amqp_set_sockfd(connection, socketFD);
+    amqp_set_sockfd(connection, socketFD);
 }
 
 - (void)loginAsUser:(NSString*)username withPasswort:(NSString*)password onVHost:(NSString*)vhost

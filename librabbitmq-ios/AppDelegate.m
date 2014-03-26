@@ -8,8 +8,10 @@
 
 #import "AppDelegate.h"
 #import "AMQPConnection.h"
+#import "AMQPConsumer.h"
 #import "AMQPChannel.h"
 #import "AMQPMessage.h"
+#import "AMQPExchange.h"
 #import "AMQPQueue.h"
 
 @implementation AppDelegate
@@ -51,17 +53,24 @@
     
     NSString* host = @"test"; // TODO - dummy - change this
     NSString* routingkey = @"routing key test"; // TODO - dummy - change this
+    int port = 0;
+    NSString* user = @"user";
+    NSString* password = @"password";
+    NSString* vhost = @"vhost";
+    (void)user;
+    (void)password;
+    (void)vhost;
     
     AMQPConnection* connection = [[AMQPConnection alloc] init];
     
-    [connection connectToHost:host];
-    [connection login];
+    [connection connectToHost:host onPort:port];
+    [connection loginAsUser:host withPasswort:password onVHost:vhost];
     
     AMQPChannel* channel = [connection openChannel];
     
     AMQPQueue* queue = [[AMQPQueue alloc] initWithName:routingkey onChannel:channel isPassive:FALSE isExclusive:FALSE isDurable:FALSE getsAutoDeleted:TRUE];
     
-    AMQPConsumer* consumer = [[AMQPConsumer alloc] initForQueue:queue onChannel:channel useAcknowledgements:TRUE isExclusive:TRUE receiveLocalMessages:NO];
+	AMQPConsumer *consumer = [[AMQPConsumer alloc] initForQueue:queue onChannel:channel useAcknowledgements:TRUE isExclusive:TRUE receiveLocalMessages:NO];
     
     while (acceptMessages) {
         NSLog(@"Waiting for a message");
@@ -77,7 +86,7 @@
         
         AMQPChannel* replyChannel = [connection openChannel];
         
-        AMQPExchange* exchange = [[AMQPExchange alloc] initWithName:@"" onChannel:replyChannel];
+        AMQPExchange *exchange = [[AMQPExchange alloc] initDirectExchangeWithName:@"" onChannel:replyChannel isPassive:NO isDurable:NO getsAutoDeleted:YES];
         
         amqp_basic_properties_t props;
         props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
@@ -89,7 +98,7 @@
             props.correlation_id = amqp_cstring_bytes([message.correlationID UTF8String]);
         }
         
-        [exchange publishMessage:@"a simple reply message" usingRoutingKey:message.replyToQueueName usingProperties:&props];
+        [exchange publishMessage:@"a simple reply message" usingRoutingKey:message.replyToQueueName];
     }
     
     NSLog(@"Closing an AMQP RPC server");

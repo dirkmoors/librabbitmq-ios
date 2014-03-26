@@ -586,8 +586,8 @@ static int recv_with_timeout(amqp_connection_state_t state, uint64_t start, stru
 
             time_left = end_timestamp - current_timestamp;
 
-            timeout->tv_sec = time_left / AMQP_NS_PER_S;
-            timeout->tv_usec = (time_left % AMQP_NS_PER_S) / AMQP_NS_PER_US;
+            timeout->tv_sec = (__darwin_time_t)(time_left / AMQP_NS_PER_S);
+            timeout->tv_usec = (__darwin_time_t)((time_left % AMQP_NS_PER_S) / AMQP_NS_PER_US);
           }
           continue;
         }
@@ -760,7 +760,7 @@ beginrecv:
       ns_until_next_timeout = next_timestamp - current_timestamp;
 
       memset(&tv, 0, sizeof(struct timeval));
-      tv.tv_sec = ns_until_next_timeout / AMQP_NS_PER_S;
+      tv.tv_sec = (__darwin_time_t)(ns_until_next_timeout / AMQP_NS_PER_S);
       tv.tv_usec = (ns_until_next_timeout % AMQP_NS_PER_S) / AMQP_NS_PER_US;
 
       tvp = &tv;

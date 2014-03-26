@@ -95,7 +95,7 @@
 		
 		properties = (amqp_basic_properties_t*)frame.payload.properties.decoded;
 		
-		bodySize = frame.payload.properties.body_size;
+		bodySize = (size_t)frame.payload.properties.body_size;
 		receivedBytes = 0;
 		body = amqp_bytes_malloc(bodySize);
 		
