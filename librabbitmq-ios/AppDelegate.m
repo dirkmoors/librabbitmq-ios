@@ -51,12 +51,12 @@
     
     NSLog(@"Starting an AMQP RPC server");
     
-    NSString* host = @"test"; // TODO - dummy - change this
-    NSString* routingkey = @"routing key test"; // TODO - dummy - change this
-    int port = 0;
-    NSString* user = @"user";
-    NSString* password = @"password";
-    NSString* vhost = @"vhost";
+    NSString* host = @"service.vrijhof.com";
+    NSString* routingkey = @"routing key test"; // TODO/FIXME - what to fill in here?
+    int port = 5673;
+    NSString* user = @"joris";
+    NSString* password = @"jorispw";
+    NSString* vhost = @"joris_test_vhost";
     (void)user;
     (void)password;
     (void)vhost;
